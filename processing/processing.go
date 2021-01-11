@@ -1,8 +1,10 @@
 package processing
 
 import (
+    "os"
     "image"
     "image/color"
+    "image/png"
 )
 
 func FractalToImage(fractal [][]bool) image.Image {
@@ -37,4 +39,10 @@ func FractalToImage(fractal [][]bool) image.Image {
     }
 
     return img
+}
+
+func SaveImage(img image.Image, fn string) error {
+    fp, _ := os.Create(fn)
+    defer fp.Close()
+    return png.Encode(fp, img)
 }
