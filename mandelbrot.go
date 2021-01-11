@@ -63,3 +63,13 @@ func setPixel(fractal [][]bool, frameInitX, frameInitY, frameEndX, frameEndY, he
 
     return fractal
 }
+
+func ZoomAt(posX, posY, width, height, frameInitX, frameInitY, frameEndX, frameEndY float64) (float64, float64, float64, float64) {
+    factor := 0.6  // TODO turn this into a constant
+    centerX := frameInitX + (posX * (frameEndX - frameInitX)) / (width)
+    centerY := frameInitY + (posY * (frameEndY - frameInitY)) / (height)
+    distX := factor * (frameEndX - frameInitX) / 2
+    distY := factor * (frameEndY - frameInitY) / 2
+    // return frameInitX, frameInitY, frameEndX, frameEndY
+    return centerX - distX, centerY - distY, centerX + distX, centerY + distY
+}
