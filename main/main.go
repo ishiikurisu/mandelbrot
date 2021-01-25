@@ -9,6 +9,9 @@ import (
 func main() {
     height := mandelbrot.NewFloat(900.0)
     width := mandelbrot.NewFloat(1600.0)
+    targetX := mandelbrot.Atof("-0.6567347481")
+    targetY := mandelbrot.Atof("0.3416144335")
+    factor := mandelbrot.NewFloat(0.9)
     var noIterations int = 100
     frameInitX, frameInitY, frameEndX, frameEndY := mandelbrot.FirstSetting(height, width)
 
@@ -20,11 +23,7 @@ func main() {
         processing.SaveImage(img, fn)
 
         // zooming
-        targetWidth := mandelbrot.NewFloat(10.0)
-        targetHeight := mandelbrot.NewFloat(2.0)
-        targetWidth.Quo(width, targetWidth)
-        targetHeight.Quo(height, targetHeight)
-        frameInitX, frameInitY, frameEndX, frameEndY = mandelbrot.ZoomAt(
-            targetWidth, targetHeight, width, height,frameInitX, frameInitY, frameEndX, frameEndY)
+        frameInitX, frameInitY, frameEndX, frameEndY = mandelbrot.Follow(
+            targetX, targetY, factor, frameInitX, frameInitY, frameEndX, frameEndY)
     }
 }
