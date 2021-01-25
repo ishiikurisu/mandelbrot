@@ -8,6 +8,12 @@ func NewFloat(f float64) *big.Float {
     return new(big.Float).SetPrec(128).SetFloat64(f)
 }
 
+func Atof(a string) *big.Float {
+    f := NewFloat(0.0)
+    f.Parse(a, 10)
+    return f
+}
+
 func FirstSetting(height, width *big.Float) (*big.Float, *big.Float, *big.Float, *big.Float) {
     acc := NewFloat(-1.0)
     frameInitX := NewFloat(0.0)
@@ -185,6 +191,46 @@ func ZoomAt(posX, posY, width, height, frameInitX, frameInitY, frameEndX, frameE
     frameInitY.Sub(centerY, distY)
     frameEndX.Add(centerX, distX)
     frameEndY.Add(centerY, distY)
+
+    return frameInitX, frameInitY, frameEndX, frameEndY
+}
+
+func Follow(targetX, targetY, factor, frameInitX, frameInitY, frameEndX, frameEndY *big.Float) (*big.Float, *big.Float, *big.Float, *big.Float) {
+    two := NewFloat(2.0)  // TODO turn this into a constant
+    acc := NewFloat(0.0)
+    halfDistX := NewFloat(0.0)
+    halfDistY := NewFloat(0.0)
+    centerX := NewFloat(0.0)
+    centerY := NewFloat(0.0)
+    newCenterX := NewFloat(0.0)
+    newCenterY := NewFloat(0.0)
+
+    // halfDistX = (frameEndX - frameInitX) / 2
+    acc.Sub(frameEndX, frameInitX)
+    halfDistX.Quo(acc, two)
+    // halfDistY = (frameEndY - frameInitY) / 2
+    acc.Sub(frameEndY, frameInitY)
+    halfDistY.Quo(acc, two)
+    // centerX = halfDistX + frameInitX
+    centerX.Add(halfDistX, frameInitX)
+    // centerY = halfDistY + frameInitY
+    centerY.Add(halfDistY, frameInitY)
+    // newCenterX = targetX + factor * (centerX - targetX)
+    acc.Sub(centerX, targetX)
+    acc.Mul(factor, acc)
+    newCenterX.Add(targetX, acc)
+    // newCenterY = targetY + factor * (centerY - targetY)
+    acc.Sub(centerY, targetY)
+    acc.Mul(factor, acc)
+    newCenterY.Add(targetY, acc)
+    // frameInitX = newCenterX - halfDistX
+    frameInitX.Sub(newCenterX, halfDistX)
+    // frameInitY = newCenterY - halfDistY
+    frameInitY.Sub(newCenterY, halfDistY)
+    // frameEndX = newCenterX + halfDistX
+    frameEndX.Add(newCenterX, halfDistX)
+    // frameEndY = newCenterY + halfDistY
+    frameEndY.Add(newCenterY, halfDistY)
 
     return frameInitX, frameInitY, frameEndX, frameEndY
 }
