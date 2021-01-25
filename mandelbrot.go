@@ -205,12 +205,14 @@ func Follow(targetX, targetY, factor, frameInitX, frameInitY, frameEndX, frameEn
     newCenterX := NewFloat(0.0)
     newCenterY := NewFloat(0.0)
 
-    // halfDistX = (frameEndX - frameInitX) / 2
+    // halfDistX = factor * (frameEndX - frameInitX) / 2
     acc.Sub(frameEndX, frameInitX)
-    halfDistX.Quo(acc, two)
-    // halfDistY = (frameEndY - frameInitY) / 2
+    acc.Quo(acc, two)
+    halfDistX.Mul(acc, factor)
+    // halfDistY = factor * (frameEndY - frameInitY) / 2
     acc.Sub(frameEndY, frameInitY)
-    halfDistY.Quo(acc, two)
+    acc.Quo(acc, two)
+    halfDistY.Mul(acc, factor)
     // centerX = halfDistX + frameInitX
     centerX.Add(halfDistX, frameInitX)
     // centerY = halfDistY + frameInitY
