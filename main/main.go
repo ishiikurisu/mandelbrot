@@ -12,7 +12,7 @@ func main() {
     targetX := mandelbrot.Atof("-0.6567347481")
     targetY := mandelbrot.Atof("0.3416144335")
     factor := mandelbrot.NewFloat(0.9)
-    var noIterations int = 100
+    var noIterations int = 1
     frameInitX, frameInitY, frameEndX, frameEndY := mandelbrot.FirstSetting(height, width)
 
     for i := 0; i < noIterations; i++ {

@@ -2,6 +2,7 @@ package mandelbrot
 
 import (
     "math/big"
+    "sync"
 )
 
 func NewFloat(f float64) *big.Float {
@@ -46,6 +47,15 @@ func FirstSetting(height, width *big.Float) (*big.Float, *big.Float, *big.Float,
     return frameInitX, frameInitY, frameEndX, frameEndY
 }
 
+func iterate(wg *sync.WaitGroup, fractal [][]bool, frameInitX, frameInitY, frameEndX, frameEndY, height, width, x, y *big.Float) [][]bool {
+    defer wg.Done()
+    varX := NewFloat(0.0)
+    varY := NewFloat(0.0)
+    varX.Copy(x)
+    varY.Copy(y)
+    return setPixel(fractal, frameInitX, frameInitY, frameEndX, frameEndY, height, width, varX, varY, Escapes(varX, varY))
+}
+
 func Mandelbrot(frameInitX, frameInitY, frameEndX, frameEndY, height, width *big.Float) [][]bool {
     acc := NewFloat(0.0)
     dx := NewFloat(0.0)
@@ -71,12 +81,14 @@ func Mandelbrot(frameInitX, frameInitY, frameEndX, frameEndY, height, width *big
 
     y := NewFloat(0.0)
     x := NewFloat(0.0)
+    var wg sync.WaitGroup
     for y.Copy(frameInitY); y.Cmp(frameEndY) == -1; y.Add(y, dy) {
         for x.Copy(frameInitX); x.Cmp(frameEndX) == -1; x.Add(x, dx) {
-            escapes := Escapes(x, y)
-            fractal = setPixel(fractal, frameInitX, frameInitY, frameEndX, frameEndY, height, width, x, y, escapes)
+            wg.Add(1)
+            iterate(&wg, fractal, frameInitX, frameInitY, frameEndX, frameEndY, height, width, x, y)
         }
     }
+    wg.Wait()
 
     return fractal
 }
