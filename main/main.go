@@ -12,10 +12,20 @@ func main() {
     targetX := mandelbrot.Atof("-0.6567347481")
     targetY := mandelbrot.Atof("0.3416144335")
     factor := mandelbrot.NewFloat(0.9)
-    var noIterations int = 1
     frameInitX, frameInitY, frameEndX, frameEndY := mandelbrot.FirstSetting(height, width)
 
-    for i := 0; i < noIterations; i++ {
+    var noIterations int = 100
+    var noSkip int = 8
+
+    for i := 0; i < noSkip; i++ {
+        fmt.Printf("s%03d\n", i)
+        frameInitX, frameInitY, frameEndX, frameEndY = mandelbrot.Follow(
+            targetX, targetY, factor, frameInitX, frameInitY, frameEndX, frameEndY)
+    }
+
+    for i := noSkip; i < noIterations; i++ {
+        fmt.Printf("m%03d\n", i)
+
         // saving image
         fractal := mandelbrot.Mandelbrot(frameInitX, frameInitY, frameEndX, frameEndY, height, width)
         img := processing.FractalToImage(fractal)
