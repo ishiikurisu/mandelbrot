@@ -5,6 +5,7 @@ import (
     "github.com/ishiikurisu/mandelbrot"
     "github.com/ishiikurisu/mandelbrot/processing"
     "sync"
+    "time"
 )
 
 func main() {
@@ -26,6 +27,9 @@ func main() {
         frameInitX, frameInitY, frameEndX, frameEndY = mandelbrot.Follow(
             targetX, targetY, factor, frameInitX, frameInitY, frameEndX, frameEndY)
     }
+
+    startTime := time.Now()
+    groupStartTime := time.Now()
 
     for i := noSkip; i < noIterations; i++ {
         // allocating memory
@@ -53,6 +57,9 @@ func main() {
         if groups == totalGroups {
             wg.Wait()
             groups = 0
+            duration := time.Since(groupStartTime)
+            fmt.Println(duration)
+            groupStartTime = time.Now()
         }
 
         // zooming
@@ -63,4 +70,7 @@ func main() {
     if groups > 0 {
         wg.Wait()
     }
+
+    totalTime := time.Since(startTime)
+    fmt.Println(totalTime)
 }
