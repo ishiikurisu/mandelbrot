@@ -11,13 +11,13 @@ import (
 func main() {
     height := mandelbrot.NewFloat(900.0)
     width := mandelbrot.NewFloat(1600.0)
-    targetX := mandelbrot.Atof("-0.6567347481")
-    targetY := mandelbrot.Atof("0.3416144335")
+    targetX := mandelbrot.Atof("-1.62917")
+    targetY := mandelbrot.Atof("-0.0203968")
     factor := mandelbrot.NewFloat(0.9)
     frameInitX, frameInitY, frameEndX, frameEndY := mandelbrot.FirstSetting(height, width)
 
     const noIterations int = 100
-    const noSkip int = 8
+    const noSkip int = 0
     const totalGroups int = 6
     var groups int = 0
     var wg sync.WaitGroup
