@@ -230,13 +230,13 @@ func Follow(targetX, targetY, factor, frameInitX, frameInitY, frameEndX, frameEn
     // centerY = halfDistY + frameInitY
     centerY.Add(halfDistY, frameInitY)
     // newCenterX = targetX + factor * (centerX - targetX)
-    acc.Sub(centerX, targetX)
+    acc.Sub(targetX, centerX)
     acc.Mul(factor, acc)
-    newCenterX.Add(targetX, acc)
+    newCenterX.Add(centerX, acc)
     // newCenterY = targetY + factor * (centerY - targetY)
-    acc.Sub(centerY, targetY)
+    acc.Sub(targetY, centerY)
     acc.Mul(factor, acc)
-    newCenterY.Add(targetY, acc)
+    newCenterY.Add(centerY, acc)
     // frameInitX = newCenterX - halfDistX
     frameInitX.Sub(newCenterX, halfDistX)
     // frameInitY = newCenterY - halfDistY
