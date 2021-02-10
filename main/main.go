@@ -16,9 +16,10 @@ func main() {
     factor := mandelbrot.NewFloat(0.9)
     frameInitX, frameInitY, frameEndX, frameEndY := mandelbrot.FirstSetting(height, width)
 
+    const maxItr int = 1024
     const noIterations int = 100
     const noSkip int = 0
-    const totalGroups int = 6
+    const totalGroups int = 3
     var groups int = 0
     var wg sync.WaitGroup
 
@@ -47,8 +48,8 @@ func main() {
         go func(i int, wg *sync.WaitGroup) {
             defer wg.Done()
             fmt.Printf("m%03d\n", i)
-            fractal := mandelbrot.Mandelbrot(f0x, f0y, fx, fy, height, width)
-            img := processing.FractalToImage(fractal)
+            fractal := mandelbrot.Mandelbrot(f0x, f0y, fx, fy, height, width, maxItr)
+            img := processing.FractalToImage(fractal, maxItr)
             fn := fmt.Sprintf("./out/m%03d.png", i)
             processing.SaveImage(img, fn)
         }(i, &wg)
