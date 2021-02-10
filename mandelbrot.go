@@ -2,7 +2,6 @@ package mandelbrot
 
 import (
     "math/big"
-    "sync"
 )
 
 func NewFloat(f float64) *big.Float {
@@ -47,16 +46,7 @@ func FirstSetting(height, width *big.Float) (*big.Float, *big.Float, *big.Float,
     return frameInitX, frameInitY, frameEndX, frameEndY
 }
 
-func iterate(wg *sync.WaitGroup, fractal [][]bool, frameInitX, frameInitY, frameEndX, frameEndY, height, width, x, y *big.Float) [][]bool {
-    defer wg.Done()
-    varX := NewFloat(0.0)
-    varY := NewFloat(0.0)
-    varX.Copy(x)
-    varY.Copy(y)
-    return setPixel(fractal, frameInitX, frameInitY, frameEndX, frameEndY, height, width, varX, varY, Escapes(varX, varY))
-}
-
-func Mandelbrot(frameInitX, frameInitY, frameEndX, frameEndY, height, width *big.Float) [][]bool {
+func Mandelbrot(frameInitX, frameInitY, frameEndX, frameEndY, height, width *big.Float, maxItr int) [][]int {
     acc := NewFloat(0.0)
     dx := NewFloat(0.0)
     dy := NewFloat(0.0)
@@ -73,35 +63,31 @@ func Mandelbrot(frameInitX, frameInitY, frameEndX, frameEndY, height, width *big
 
     intWidth, _ := width.Int64()
     intHeight, _ := height.Int64()
-    fractal := make([][]bool, intWidth)
+    fractal := make([][]int, intWidth)
     var i int64
     for i = 0; i < intWidth; i++ {
-        fractal[i] = make([]bool, intHeight)
+        fractal[i] = make([]int, intHeight)
     }
 
     y := NewFloat(0.0)
     x := NewFloat(0.0)
-    var wg sync.WaitGroup
     for y.Copy(frameInitY); y.Cmp(frameEndY) == -1; y.Add(y, dy) {
         for x.Copy(frameInitX); x.Cmp(frameEndX) == -1; x.Add(x, dx) {
-            wg.Add(1)
-            iterate(&wg, fractal, frameInitX, frameInitY, frameEndX, frameEndY, height, width, x, y)
+            setPixel(fractal, frameInitX, frameInitY, frameEndX, frameEndY, height, width, x, y, Escapes(x, y, maxItr))
         }
     }
-    wg.Wait()
 
     return fractal
 }
 
-func Escapes(cx, cy *big.Float) bool {
+func Escapes(cx, cy *big.Float, maxItr int) int {
     zx := NewFloat(0.0)
     zy := NewFloat(0.0)
     two := NewFloat(2.0) // TODO turn this into a constant
     limit := two.Copy(two)
-    maxItr := 1024  // TODO turn this into a constant
+    i := 0
 
-
-    for i := 0; i < maxItr && Pythagoras(zx, zy).Cmp(limit) == -1; i++ {
+    for i = 0; i < maxItr && Pythagoras(zx, zy).Cmp(limit) == -1; i++ {
         acc := NewFloat(0.0)
         temp := NewFloat(0.0)
         zx2 := NewFloat(0.0)
@@ -123,7 +109,11 @@ func Escapes(cx, cy *big.Float) bool {
         zy.Copy(acc)
     }
 
-    return Pythagoras(zx, zy).Cmp(two) == 1
+    if Pythagoras(zx, zy).Cmp(two) == 1 {
+        return i
+    } else {
+        return -1
+    }
 }
 
 func Pythagoras(x, y *big.Float) *big.Float {
@@ -137,7 +127,7 @@ func Pythagoras(x, y *big.Float) *big.Float {
     return x2.Sqrt(x2)
 }
 
-func setPixel(fractal [][]bool, frameInitX, frameInitY, frameEndX, frameEndY, height, width, px, py *big.Float, state bool) [][]bool {
+func setPixel(fractal [][]int, frameInitX, frameInitY, frameEndX, frameEndY, height, width, px, py *big.Float, noItr int) [][]int {
     accA := NewFloat(0.0)
     accB := NewFloat(0.0)
     x := NewFloat(0.0)
@@ -159,7 +149,7 @@ func setPixel(fractal [][]bool, frameInitX, frameInitY, frameEndX, frameEndY, he
 
     i, _ := x.Int64()
     j, _ := y.Int64()
-    fractal[i][j] = state
+    fractal[i][j] = noItr
 
     return fractal
 }
