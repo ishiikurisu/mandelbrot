@@ -14,19 +14,21 @@ Create a folder named `out` in this repository's root:
 mkdir out
 ```
 
-On the `main/main.go` file, adjust the parallel execution settings for
-your machine. These are the variables you probably want to tweak:
+Adjust the parallel execution settings for
+your context by tweaking the `config.json` file.
 
-``` go
-height := mandelbrot.NewFloat(900.0)  // frame dimensions
-width := mandelbrot.NewFloat(1600.0)
-targetX := mandelbrot.Atof("-0.6567347481")  // target point
-targetY := mandelbrot.Atof("0.3416144335")
-factor := mandelbrot.NewFloat(0.9)  // zoom factor between frames
-// ...
-const noIterations int = 100  // how many frames you want
-const noSkip int = 8  // how many frames to skip if some have already been generated
-const totalGroups int = 6  // how many parallel executions should happen at once
+``` json
+{
+    "Height": "900.0",
+    "Width": "1600.0",
+    "TargetX": "-1.62917",
+    "TargetY": "-0.0203968",
+    "Factor": "0.9",
+    "MaxItr": 1024,
+    "NumberOfIterations": 1000,
+    "NumberOfSkips": 30,
+    "TotalGroups": 3
+}
 ```
 
 Now, just execute the project:

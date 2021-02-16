@@ -1,0 +1,11 @@
+{
+    "Height": "900.0",
+    "Width": "1600.0",
+    "TargetX": "-1.62917",
+    "TargetY": "-0.0203968",
+    "Factor": "0.9",
+    "MaxItr": 1024,
+    "NumberOfIterations": 1000,
+    "NumberOfSkips": 30,
+    "TotalGroups": 3
+}

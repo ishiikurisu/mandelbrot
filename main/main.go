@@ -6,22 +6,40 @@ import (
     "github.com/ishiikurisu/mandelbrot/processing"
     "sync"
     "time"
+    "encoding/json"
+    "os"
 )
 
-func main() {
-    height := mandelbrot.NewFloat(900.0)
-    width := mandelbrot.NewFloat(1600.0)
-    targetX := mandelbrot.Atof("-1.62917")
-    targetY := mandelbrot.Atof("-0.0203968")
-    factor := mandelbrot.NewFloat(0.9)
-    frameInitX, frameInitY, frameEndX, frameEndY := mandelbrot.FirstSetting(height, width)
+type Configuration struct {
+    Height string
+    Width string
+    TargetX string
+    TargetY string
+    Factor string
+    MaxItr int
+    NumberOfIterations int
+    NumberOfSkips int
+    TotalGroups int
+}
 
-    const maxItr int = 1024
-    const noIterations int = 100
-    const noSkip int = 0
-    const totalGroups int = 3
-    var groups int = 0
-    var wg sync.WaitGroup
+func main() {
+    config, oops := loadConfig("./config.json")
+    if oops != nil {
+        panic(oops)
+    }
+
+    height := mandelbrot.Atof(config.Height)
+    width := mandelbrot.Atof(config.Width)
+    targetX := mandelbrot.Atof(config.TargetX)
+    targetY := mandelbrot.Atof(config.TargetY)
+    factor := mandelbrot.Atof(config.Factor)
+    maxItr := config.MaxItr
+    noIterations := config.NumberOfIterations
+    noSkip := config.NumberOfSkips
+    totalGroups := config.TotalGroups
+
+    frameInitX, frameInitY, frameEndX, frameEndY := mandelbrot.FirstSetting(height, width)
+    groups := 0
 
     for i := 0; i < noSkip; i++ {
         fmt.Printf("s%03d\n", i)
@@ -29,6 +47,7 @@ func main() {
             targetX, targetY, factor, frameInitX, frameInitY, frameEndX, frameEndY)
     }
 
+    var wg sync.WaitGroup
     startTime := time.Now()
     groupStartTime := time.Now()
 
@@ -74,4 +93,13 @@ func main() {
 
     totalTime := time.Since(startTime)
     fmt.Println(totalTime)
+}
+
+func loadConfig(path string) (Configuration, error) {
+    file, _ := os.Open(path)
+    defer file.Close()
+    config := Configuration{}
+    decoder := json.NewDecoder(file)
+    err := decoder.Decode(&config)
+    return config, err
 }
