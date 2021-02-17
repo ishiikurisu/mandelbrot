@@ -1,7 +1,6 @@
 package processing
 
 import (
-    "fmt"
     "os"
     "image"
     "image/color"
@@ -42,7 +41,6 @@ func assignColor(noItr, maxItr int) color.RGBA {
         return black
     } else {
         c := uint8(float64(0xff) * (float64(maxItr) - float64(noItr)) / float64(maxItr))
-        fmt.Printf("%d %d => %d %d\n", noItr, maxItr, c, 0xff)
         return color.RGBA{
             c,
             c,
