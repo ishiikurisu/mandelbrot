@@ -6,6 +6,8 @@ of maths ever.
 Originally made using Processing, I switched to Go so I could faster arbitrary
 precision arithmetics.
 
+[See it in action!](https://vimeo.com/514280627)
+
 ## Instructions
 
 Create a folder named `out` in this repository's root:
